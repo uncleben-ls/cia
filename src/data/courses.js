@@ -8,7 +8,7 @@ export const courses = [
     duration: "3 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Beauty",
-    image: "/src/assets/images/Certificate in Make-Up Artistry/makeup4.jpeg",
+    image: "../../public/images/Certificate in Makeup Artistry/makeup4.jpg",
     requirements: ["Minimum Grade 7 Certificate", "Basic English Literacy", "Passion for Beauty Artistry"],
     modules: ["Skin Preparation", "Color Theory", "Day/Evening Looks", "Bridal & Glamour", "Sanitization"]
   },
@@ -170,4 +170,5 @@ export const courses = [
     requirements: ["LGCSE with 4 Credits", "Fashion Drawing Portfolio", "Interview with Faculty"],
     modules: ["Draping", "Apparel Technology", "Marketing & Merchandising", "Sustainability in Fashion", "Graduation Collection"]
   }
+  
 ];

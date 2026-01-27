@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { getNextIntake } from '../utils/intakeManager';
 import StudentFilms from '../components/StudentFilms';
 import Lookbook from '../components/Lookbook';
-import BgPic from '../assets/images/bg.jpg';
+import BgPic from '../../public/images/bg.jpg';
 
 
 export default function Home() {
@@ -47,9 +47,17 @@ export default function Home() {
               <Link to="/enroll" className="bg-cia-yellow text-cia-black px-8 py-4 font-black uppercase text-xs flex items-center gap-2 shadow-[4px_4px_0px_0px_rgba(128,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
                 Start Your Application <ArrowRight size={16} />
               </Link>
-              <button className="border border-white text-white px-8 py-4 font-black uppercase text-xs flex items-center gap-2 hover:bg-white hover:text-cia-black transition-all">
-                <Play size={16} fill="currentColor" /> Watch Campus Tour
-              </button>
+              {/* HOME.JSX HERO BUTTON */}
+              <a 
+                href="https://youtu.be/YEwbFUoi7tc?si=ljKMY_LhFja2qpw5" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block"
+              >
+                <button className="border border-white text-white px-8 py-4 font-black uppercase text-xs flex items-center gap-2 hover:bg-white hover:text-cia-black transition-all">
+                  <Play size={16} fill="currentColor" /> Watch Campus Tour
+                </button>
+              </a>
             </div>
           </div>
         </div>
@@ -63,7 +71,7 @@ export default function Home() {
         <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             { icon: <Users className="text-cia-maroon"/>, val: "50+", label: "Active Students" },
-            { icon: <Award className="text-cia-maroon"/>, val: "12", label: "Creative Courses" },
+            { icon: <Award className="text-cia-maroon"/>, val: "15+", label: "Creative Courses" },
             { icon: <Star className="text-cia-maroon"/>, val: "85%", label: "Employment Rate" },
             { icon: <Star className="text-cia-maroon"/>, val: "Top 1", label: "Arts School Lesotho" },
           ].map((stat, i) => (
