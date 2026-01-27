@@ -1,3 +1,4 @@
+
 export const courses = [
   // --- TIER 1: NON-CREDIT BEARING (Short Courses) ---
   {

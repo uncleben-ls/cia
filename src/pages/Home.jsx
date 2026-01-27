@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { getNextIntake } from '../utils/intakeManager';
 import StudentFilms from '../components/StudentFilms';
 import Lookbook from '../components/Lookbook';
+import BgPic from '../assets/images/bg.jpg';
 
 
 export default function Home() {
@@ -15,14 +16,11 @@ export default function Home() {
           CATEGORY: HERO SECTION
           Purpose: High-impact first impression with your primary call to action.
       ----------------------------------------------------------------------- */}
-      <section className="relative h-[90vh] bg-cia-black flex items-center overflow-hidden">
+      <section className="relative h-[80vh] bg-cia-black flex items-center overflow-hidden">
         {/* Background Image Overlay */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src="/src/assets/images/bg.jpg" 
-            alt="Campus Life" 
-            className="w-full h-full object-cover opacity-40 scale-105"
-          />
+          
+          <img src={BgPic} alt="Cograbigs Models at Campus" className="w-full h-full object-cover opacity-40 scale-105"/>
           <div className="absolute inset-0 bg-gradient-to-r from-cia-black via-cia-black/60 to-transparent"></div>
         </div>
 

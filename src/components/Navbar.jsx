@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Menu, X, Phone, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getNextIntake } from '../utils/intakeManager';
+import Logo from '../assets/logo.png';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,12 +29,10 @@ export default function Navbar() {
         
         {/* LOGO INSERTED HERE - Replacing old branding text/icon */}
         <div className="flex items-center gap-3">
-          <img 
-            src="/src/assets/logo.png" 
-            alt="Cograbig Institute of Arts" 
-            className="h-10 md:h-14 w-auto object-contain" 
-            style={{height: "50px", width: 'auto'}}
-          />
+
+          {/* LOGO */}
+          <img src={Logo} alt="CIA Logo" className="h-10 md:h-12" />
+          
           {/* Optional: Keep the text brand next to logo, or remove if logo contains text */}
           <div className="hidden sm:flex flex-col border-l border-white/20 pl-3">
             <span className="text-white font-black text-lg md:text-2xl leading-none tracking-tighter">COGRABIG</span>
@@ -84,7 +83,8 @@ export default function Navbar() {
           </button>
           
           <div className="flex flex-col items-center gap-6 text-center">
-            <img src="/src/assets/logo.png" alt="Logo" className="h-20 mb-4" />
+            {/* LOGO */}
+          <img src={Logo} alt="CIA Logo" className="h-20 md:h-12" />
             <a href="/" onClick={() => setIsMenuOpen(false)} className="text-xs font-bold tracking-widest hover:text-cia-yellow">HOME</a>
             <a href="/about" onClick={() => setIsMenuOpen(false)} className="text-xs font-bold tracking-widest hover:text-cia-yellow">ABOUT CIA</a>
             <a href="/about" onClick={() => setIsMenuOpen(false)} className="text-xs font-bold tracking-widest hover:text-cia-yellow">NEWS & MEDIA</a>
