@@ -1,45 +1,243 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, ArrowRight, ArrowLeft, Upload, User, BookOpen, FileText } from 'lucide-react';
-import { getNextIntake } from '../utils/intakeManager';
+import React, { useState } from 'react';
+import {
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft,
+  Upload,
+  User,
+  BookOpen,
+  FileText,
+  GraduationCap,
+  Plus,
+  Trash2
+} from 'lucide-react';
+
+/* -----------------------------------------
+   OPTIONAL: Intake helper
+------------------------------------------ */
+const getNextIntake = () => {
+  return {
+    name: "2026 Intake",
+    isShortOnly: false
+  };
+};
 
 export default function Enroll() {
   const intake = getNextIntake();
   const [step, setStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // --- FORM STATE ---
+  /* -----------------------------------------
+     FORM STATE
+  ------------------------------------------ */
   const [formData, setFormData] = useState({
-    fullName: '',
+    // Step 1
+    fullNames: '',
+    surname: '',
+    gender: '',
+    maritalStatus: '',
+    dateOfBirth: '',
+    nationality: '',
+    idPassportNumber: '',
+    country: '',
+    address: '',
+    telNo: '',
     email: '',
-    phone: '',
-    selectedCourse: '',
-    intakePeriod: intake.name,
-    qualification: '',
-    idDocument: null
+    disability: '',
+    disabilityDescription: '',
+    dietNeeds: '',
+    nextOfKinName: '',
+    nextOfKinNumber: '',
+
+    // Step 2
+    firstChoice: '',
+    secondChoice: '',
+    modeOfStudy: '',
+    highestQualification: '',
+
+    // Step 3
+    secondarySchools: [
+      { school: '', from: '', to: '', qualification: '', year: '', file: null }
+    ],
+    tertiaryInstitutions: [
+      { institution: '', from: '', to: '', qualification: '', year: '', file: null }
+    ],
+    trainingCourses: [
+      { course: '', institution: '', from: '', to: '', file: null }
+    ],
+
+    // Step 4 (NEW)
+    sponsorType: '',
+    sponsorName: '',
+    sponsorContact: '',
+    sponsorEmail: '',
+    sponsorAddress: '',
+    sponsorID: '',
+
+    // Step 5
+    documents: null
   });
 
-  // --- COURSE LIST ---
-  const allCourses = [
-    { id: 'fashion', name: "Diploma in Fashion & Design", isShort: false },
-    { id: 'music', name: "Music Production & Theory", isShort: false },
-    { id: 'makeup', name: "Cert. in Professional Makeup", isShort: true },
-    { id: 'photography', name: "Short Course: Photography", isShort: true },
-  ];
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
-  // Filter based on the dynamic intake manager
-  const availableCourses = intake.isShortOnly 
-    ? allCourses.filter(c => c.isShort) 
-    : allCourses;
+  /* -----------------------------------------
+     COURSE LISTS
+  ------------------------------------------ */
+  const shortCourses = ["Makeup Artistry", "Special Effects Makeup", "Hairdressing", "Dance Art", "Sewing"];
+  const longTermCourses = ["Certificate in Tailoring", "Certificate in Dressmaking", "Certificate in Fashion Design", "Certificate in Theatre & Dramatic Arts", "Certificate in Music Performance"];
+  const diplomaCourses = ["Diploma in Fashion Design"];
 
-  const handleNext = () => setStep(step + 1);
-  const handleBack = () => setStep(step - 1);
+  const courseGroups = {
+    "Short Courses": shortCourses,
+    "Long Term Certificate Courses": longTermCourses,
+    "Diploma Courses": diplomaCourses
+  };
+
+  /* -----------------------------------------
+     HELPERS
+  ------------------------------------------ */
+  const isPDF = (file) => file && file.type === "application/pdf";
+  const setFieldError = (name, message) => setErrors(prev => ({ ...prev, [name]: message }));
+  const clearFieldError = (name) => setErrors(prev => ({ ...prev, [name]: undefined }));
+  const markTouched = (name) => setTouched(prev => ({ ...prev, [name]: true }));
+
+  /* -----------------------------------------
+     HANDLERS
+  ------------------------------------------ */
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (files) {
+      const file = files[0];
+      if (file && !isPDF(file)) {
+        setFieldError(name, "Only PDF files are allowed");
+        return;
+      }
+      clearFieldError(name);
+      setFormData(prev => ({ ...prev, [name]: file }));
+      return;
+    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (value) clearFieldError(name);
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    markTouched(name);
+    if (!value) setFieldError(name, "This field is required");
+  };
+
+  const handleNext = () => {
+    if (step === 1 && !isStepOneValid(true)) return;
+    if (step === 2 && !isStepTwoValid(true)) return;
+    if (step === 3 && !isStepThreeValid(true)) return;
+    if (step === 4 && !isStepFourValid(true)) return;
+    if (step === 5 && !formData.documents) {
+        setFieldError("documents", "Please upload required documents");
+        return;
+    }
+    setStep(prev => prev + 1);
+    window.scrollTo(0, 0);
+  };
+
+  const handleBack = () => {
+    setStep(prev => prev - 1);
+    window.scrollTo(0, 0);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting to Cograbig DB:", formData);
+    console.log("FORM SUBMITTED:", formData);
     setIsSubmitted(true);
   };
 
+  /* -----------------------------------------
+     TABLE HANDLERS
+  ------------------------------------------ */
+  const updateRow = (section, index, field, value) => {
+    const updated = [...formData[section]];
+    updated[index][field] = value;
+    setFormData(prev => ({ ...prev, [section]: updated }));
+    if (value) clearFieldError(`${section}.${index}.${field}`);
+  };
+
+  const handleRowFile = (section, index, field, file) => {
+    if (file && !isPDF(file)) {
+      setFieldError(`${section}.${index}.${field}`, "PDF files only");
+      return;
+    }
+    clearFieldError(`${section}.${index}.${field}`);
+    updateRow(section, index, field, file);
+  };
+
+  const addRow = (section, emptyRow) => {
+    setFormData(prev => ({ ...prev, [section]: [...prev[section], emptyRow] }));
+  };
+
+  const removeRow = (section, index) => {
+    const updated = [...formData[section]];
+    updated.splice(index, 1);
+    setFormData(prev => ({ ...prev, [section]: updated }));
+  };
+
+  /* -----------------------------------------
+     VALIDATION
+  ------------------------------------------ */
+  const isStepOneValid = (mark = false) => {
+    const required = ['fullNames','surname','gender','maritalStatus','dateOfBirth','nationality','idPassportNumber','country','address','telNo','email','disability','nextOfKinName','nextOfKinNumber'];
+    let valid = true;
+    required.forEach(field => {
+      if (!formData[field]) {
+        valid = false;
+        if (mark) { markTouched(field); setFieldError(field, "Required"); }
+      }
+    });
+    return valid;
+  };
+
+  const isStepTwoValid = (mark = false) => {
+    const required = ['firstChoice', 'modeOfStudy', 'highestQualification'];
+    let valid = true;
+    required.forEach(field => {
+      if (!formData[field]) {
+        valid = false;
+        if (mark) { markTouched(field); setFieldError(field, "Required"); }
+      }
+    });
+    return valid;
+  };
+
+  const isStepThreeValid = (mark = false) => {
+    const first = formData.secondarySchools[0];
+    const fields = ['school', 'from', 'to', 'qualification', 'year'];
+    let valid = true;
+    fields.forEach(field => {
+      if (!first[field]) {
+        valid = false;
+        if (mark) setFieldError(`secondarySchools.0.${field}`, "Required");
+      }
+    });
+    return valid;
+  };
+
+  const isStepFourValid = (mark = false) => {
+    const required = ['sponsorType'];
+    if (formData.sponsorType && formData.sponsorType !== 'Self') {
+      required.push('sponsorName', 'sponsorContact');
+    }
+    let valid = true;
+    required.forEach(field => {
+      if (!formData[field]) {
+        valid = false;
+        if (mark) { markTouched(field); setFieldError(field, "Required"); }
+      }
+    });
+    return valid;
+  };
+
+  /* -----------------------------------------
+     SUCCESS SCREEN
+  ------------------------------------------ */
   if (isSubmitted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white px-6">
@@ -47,169 +245,321 @@ export default function Enroll() {
           <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle size={40} />
           </div>
-          <h2 className="text-3xl font-black uppercase text-cia-black">Application Received!</h2>
-          <p className="text-gray-500 font-medium leading-relaxed">
-            Thank you, <span className="text-cia-maroon font-bold">{formData.fullName}</span>. 
-            Our admissions team for the <span className="font-bold">{intake.name}</span> intake will review your documents and contact you within 3-5 working days.
+          <h2 className="text-3xl font-black uppercase text-gray-900">Application Received!</h2>
+          <p className="text-gray-600 font-medium leading-relaxed">
+            Thank you <span className="font-bold">{formData.fullNames}</span>. Our admissions team will contact you shortly.
           </p>
-          <button onClick={() => window.location.href = '/'} className="bg-cia-black text-white px-8 py-3 font-black uppercase text-xs">Return Home</button>
+          <button onClick={() => window.location.href = '/'} className="bg-black text-white px-8 py-3 font-black uppercase text-xs hover:bg-gray-800 transition">Return Home</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-6">
-      <div className="max-w-4xl mx-auto bg-white shadow-2xl border border-gray-100 flex flex-col md:flex-row overflow-hidden">
-        
-        {/* LEFT SIDE: PROGRESS & STATUS */}
-        <div className="w-full md:w-80 bg-cia-black p-10 text-white">
-          <h1 className="text-2xl font-black uppercase tracking-tighter mb-8 leading-tight">
-            Apply for <br /><span className="text-cia-yellow">{intake.name}</span>
-          </h1>
-          
-          <div className="space-y-8 relative">
-            <div className={`flex items-center gap-4 ${step >= 1 ? 'text-cia-yellow' : 'text-gray-600'}`}>
-              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-xs ${step >= 1 ? 'border-cia-yellow' : 'border-gray-600'}`}>1</div>
-              <span className="text-[10px] font-black uppercase tracking-widest">Personal Info</span>
+    // Responsive padding applied here (py-12 px-6 sm:px-12 md:px-16 lg:px-24) to ensure space on all sides
+    <div className="min-h-screen bg-slate-50 py-12 px-6 sm:px-12 md:px-16 lg:px-24 pb-16">
+      <div className="max-w-7xl mx-auto bg-white shadow-xl border border-gray-100 flex flex-col md:flex-row rounded-sm">
+
+        {/* --- LEFT PROGRESS PANEL --- */}
+        <div className="w-full md:w-80 bg-black p-10 text-white">
+          <h1 className="text-2xl font-black uppercase tracking-tight mb-8 leading-tight">Apply for <br /><span className="text-yellow-400">{intake.name}</span></h1>
+          <div className="space-y-6">
+            <ProgressStep active={step >= 1} number="1" label="Personal Info" />
+            <ProgressStep active={step >= 2} number="2" label="Course Choice" />
+            <ProgressStep active={step >= 3} number="3" label="Education" />
+            <ProgressStep active={step >= 4} number="4" label="Sponsorship" />
+            <ProgressStep active={step >= 5} number="5" label="Documents" />
+            <ProgressStep active={step >= 6} number="6" label="Review & Submit" />
+          </div>
+        </div>
+
+        {/* --- RIGHT FORM PANEL --- */}
+        <div className="flex-1 p-6 md:p-12 min-h-[500px]">
+          {/* PROGRESS BAR */}
+          <div className="mb-10">
+            <div className="flex justify-between items-end mb-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Application Progress</p>
+              <p className="text-sm font-black text-black">{Math.round((step / 6) * 100)}%</p>
             </div>
-            <div className={`flex items-center gap-4 ${step >= 2 ? 'text-cia-yellow' : 'text-gray-600'}`}>
-              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-xs ${step >= 2 ? 'border-cia-yellow' : 'border-gray-600'}`}>2</div>
-              <span className="text-[10px] font-black uppercase tracking-widest">Academic Path</span>
-            </div>
-            <div className={`flex items-center gap-4 ${step >= 3 ? 'text-cia-yellow' : 'text-gray-600'}`}>
-              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-xs ${step >= 3 ? 'border-cia-yellow' : 'border-gray-600'}`}>3</div>
-              <span className="text-[10px] font-black uppercase tracking-widest">Documents</span>
+            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-yellow-500 transition-all duration-500 ease-out" style={{ width: `${(step / 6) * 100}%` }}></div>
             </div>
           </div>
 
-          {intake.isShortOnly && (
-            <div className="mt-20 p-4 bg-cia-maroon/30 border border-cia-maroon rounded-sm">
-              <p className="text-[9px] font-black uppercase text-cia-yellow leading-relaxed">
-                Note: This window is for Certificates & Short Courses only.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* RIGHT SIDE: THE FORM CONTENT */}
-        <div className="flex-1 p-10">
           <form onSubmit={handleSubmit} className="h-full flex flex-col">
-            
-            {/* STEP 1: PERSONAL DETAILS */}
+
+            {/* STEP 1 */}
             {step === 1 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                <div className="flex items-center gap-2 text-cia-maroon mb-6">
-                   <User size={20} /> <h2 className="font-black uppercase text-sm tracking-widest">Basic Information</h2>
-                </div>
-                <div className="space-y-4">
-                  <input 
-                    required 
-                    type="text" 
-                    placeholder="Full Legal Name" 
-                    className="w-full p-4 bg-slate-50 border border-gray-200 outline-none focus:border-cia-maroon text-sm font-bold"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                  />
-                  <input 
-                    required 
-                    type="email" 
-                    placeholder="Email Address" 
-                    className="w-full p-4 bg-slate-50 border border-gray-200 outline-none focus:border-cia-maroon text-sm font-bold"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  />
-                  <input 
-                    required 
-                    type="tel" 
-                    placeholder="Phone Number (+266...)" 
-                    className="w-full p-4 bg-slate-50 border border-gray-200 outline-none focus:border-cia-maroon text-sm font-bold"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  />
+                <SectionHeader icon={<User size={20} />} title="Personal Information" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input label="Full Names" required name="fullNames" value={formData.fullNames} onChange={handleChange} onBlur={handleBlur} error={errors.fullNames} touched={touched.fullNames} />
+                  <Input label="Surname" required name="surname" value={formData.surname} onChange={handleChange} onBlur={handleBlur} error={errors.surname} touched={touched.surname} />
+                  <Select label="Gender" required name="gender" value={formData.gender} onChange={handleChange} onBlur={handleBlur} options={["Male", "Female", "Other", "Prefer not to say"]} error={errors.gender} touched={touched.gender} />
+                  <Select label="Marital Status" required name="maritalStatus" value={formData.maritalStatus} onChange={handleChange} onBlur={handleBlur} options={["Single", "Married", "Divorced", "Widowed", "Separated", "Other"]} error={errors.maritalStatus} touched={touched.maritalStatus} />
+                  <Input label="Date of Birth" required type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} onBlur={handleBlur} error={errors.dateOfBirth} touched={touched.dateOfBirth} />
+                  <Input label="Nationality" required name="nationality" value={formData.nationality} onChange={handleChange} onBlur={handleBlur} error={errors.nationality} touched={touched.nationality} />
+                  <Input label="ID / Passport Number" required name="idPassportNumber" value={formData.idPassportNumber} onChange={handleChange} onBlur={handleBlur} error={errors.idPassportNumber} touched={touched.idPassportNumber} />
+                  <Input label="Country" required name="country" value={formData.country} onChange={handleChange} onBlur={handleBlur} error={errors.country} touched={touched.country} />
+                  <Textarea label="Residential Address" required name="address" value={formData.address} onChange={handleChange} onBlur={handleBlur} error={errors.address} touched={touched.address} className="md:col-span-2" />
+                  <Input label="Telephone" required type="tel" name="telNo" value={formData.telNo} onChange={handleChange} onBlur={handleBlur} error={errors.telNo} touched={touched.telNo} />
+                  <Input label="Email" required type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} touched={touched.email} />
+                  <Select label="Disability?" required name="disability" value={formData.disability} onChange={handleChange} onBlur={handleBlur} options={["No", "Yes"]} error={errors.disability} touched={touched.disability} />
+                  {formData.disability === "Yes" && <Textarea label="Describe" required name="disabilityDescription" value={formData.disabilityDescription} onChange={handleChange} onBlur={handleBlur} error={errors.disabilityDescription} touched={touched.disabilityDescription} className="md:col-span-2" />}
+                  <Input label="Dietary Needs" name="dietNeeds" value={formData.dietNeeds} onChange={handleChange} />
+                  <Input label="Next of Kin Name" required name="nextOfKinName" value={formData.nextOfKinName} onChange={handleChange} onBlur={handleBlur} error={errors.nextOfKinName} touched={touched.nextOfKinName} />
+                  <Input label="Next of Kin Number" required type="tel" name="nextOfKinNumber" value={formData.nextOfKinNumber} onChange={handleChange} onBlur={handleBlur} error={errors.nextOfKinNumber} touched={touched.nextOfKinNumber} />
                 </div>
               </div>
             )}
 
-            {/* STEP 2: COURSE SELECTION */}
+            {/* STEP 2 */}
             {step === 2 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                <div className="flex items-center gap-2 text-cia-maroon mb-6">
-                   <BookOpen size={20} /> <h2 className="font-black uppercase text-sm tracking-widest">Select Program</h2>
-                </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Available Courses for {intake.name}</label>
-                  <select 
-                    required
-                    className="w-full p-4 bg-slate-50 border border-gray-200 outline-none focus:border-cia-maroon text-sm font-bold"
-                    value={formData.selectedCourse}
-                    onChange={(e) => setFormData({...formData, selectedCourse: e.target.value})}
-                  >
-                    <option value="">Select a Program</option>
-                    {availableCourses.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                  </select>
-                  
-                  <textarea 
-                    placeholder="Briefly tell us why you want to study this course..." 
-                    className="w-full p-4 bg-slate-50 border border-gray-200 outline-none focus:border-cia-maroon text-sm font-bold h-32"
-                    onChange={(e) => setFormData({...formData, qualification: e.target.value})}
-                  ></textarea>
+                <SectionHeader icon={<BookOpen size={20} />} title="Course Applied For" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select label="First Choice" required name="firstChoice" value={formData.firstChoice} onChange={handleChange} onBlur={handleBlur} groupedOptions={courseGroups} error={errors.firstChoice} touched={touched.firstChoice} />
+                  <Select label="Second Choice" name="secondChoice" value={formData.secondChoice} onChange={handleChange} groupedOptions={courseGroups} />
+                  <Select label="Mode of Study" required name="modeOfStudy" value={formData.modeOfStudy} onChange={handleChange} onBlur={handleBlur} options={["Full Time", "Part Time"]} error={errors.modeOfStudy} touched={touched.modeOfStudy} />
+                  <Input label="Highest Qualification" required name="highestQualification" value={formData.highestQualification} onChange={handleChange} onBlur={handleBlur} error={errors.highestQualification} touched={touched.highestQualification} />
                 </div>
               </div>
             )}
 
-            {/* STEP 3: DOCUMENT UPLOAD */}
+            {/* STEP 3 */}
             {step === 3 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                <div className="flex items-center gap-2 text-cia-maroon mb-6">
-                   <FileText size={20} /> <h2 className="font-black uppercase text-sm tracking-widest">Upload Credentials</h2>
+              <div className="space-y-10 animate-in fade-in slide-in-from-right-4 pb-8">
+                <SectionHeader icon={<GraduationCap size={20} />} title="Education & Experience" />
+                
+                {/* Secondary School Table */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-black uppercase text-xs tracking-widest text-gray-700">Secondary School <span className="text-red-600">*</span></h3>
+                  </div>
+                  <div className="overflow-x-auto border border-gray-200">
+                    <table className="w-full text-sm">
+                      <thead className="bg-slate-100 text-[10px] uppercase tracking-widest text-gray-600">
+                        <tr>
+                          <th className="p-3 border-r">School</th>
+                          <th className="p-3 border-r">From</th>
+                          <th className="p-3 border-r">To</th>
+                          <th className="p-3 border-r">Qualification</th>
+                          <th className="p-3 border-r">Year</th>
+                          <th className="p-3">File</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {formData.secondarySchools.map((row, i) => (
+                          <tr key={i} className="border-t border-gray-200">
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.school} onChange={(e) => updateRow('secondarySchools', i, 'school', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.from} onChange={(e) => updateRow('secondarySchools', i, 'from', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.to} onChange={(e) => updateRow('secondarySchools', i, 'to', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.qualification} onChange={(e) => updateRow('secondarySchools', i, 'qualification', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.year} onChange={(e) => updateRow('secondarySchools', i, 'year', e.target.value)} /></td>
+                            <td className="p-2"><input type="file" accept="application/pdf" className="text-[10px] w-full" onChange={(e) => handleRowFile('secondarySchools', i, 'file', e.target.files[0])} /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <div className="border-2 border-dashed border-gray-200 p-10 text-center space-y-4 hover:border-cia-maroon transition-colors cursor-pointer relative">
-                  <Upload className="mx-auto text-gray-300" size={32} />
-                  <p className="text-xs font-bold text-gray-400">Upload Certified ID Copy & Highest Qualification (PDF/JPG)</p>
-                  <input 
-                    type="file" 
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => setFormData({...formData, idDocument: e.target.files[0]})}
-                  />
-                  {formData.idDocument && <p className="text-[10px] text-green-600 font-black uppercase italic tracking-widest">File Selected: {formData.idDocument.name}</p>}
+
+                {/* Tertiary Institutions Table */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-black uppercase text-xs tracking-widest text-gray-700">Tertiary Institutions</h3>
+                    <button type="button" onClick={() => addRow('tertiaryInstitutions', { institution: '', from: '', to: '', qualification: '', year: '', file: null })} className="text-xs font-black uppercase text-blue-600 flex items-center gap-1"><Plus size={14}/> Add Row</button>
+                  </div>
+                  <div className="overflow-x-auto border border-gray-200">
+                    <table className="w-full text-sm">
+                      <thead className="bg-slate-100 text-[10px] uppercase tracking-widest text-gray-600">
+                        <tr>
+                          <th className="p-3 border-r">Institution</th>
+                          <th className="p-3 border-r">From</th>
+                          <th className="p-3 border-r">To</th>
+                          <th className="p-3 border-r">Qualification</th>
+                          <th className="p-3 border-r">Year</th>
+                          <th className="p-3">File</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {formData.tertiaryInstitutions.map((row, i) => (
+                          <tr key={i} className="border-t border-gray-200">
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.institution} onChange={(e) => updateRow('tertiaryInstitutions', i, 'institution', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.from} onChange={(e) => updateRow('tertiaryInstitutions', i, 'from', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.to} onChange={(e) => updateRow('tertiaryInstitutions', i, 'to', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.qualification} onChange={(e) => updateRow('tertiaryInstitutions', i, 'qualification', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.year} onChange={(e) => updateRow('tertiaryInstitutions', i, 'year', e.target.value)} /></td>
+                            <td className="p-2"><input type="file" accept="application/pdf" className="text-[10px] w-full" onChange={(e) => handleRowFile('tertiaryInstitutions', i, 'file', e.target.files[0])} /></td>
+                            <td className="p-2">{i > 0 && <button type="button" onClick={() => removeRow('tertiaryInstitutions', i)} className="text-red-500"><Trash2 size={16}/></button>}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 p-4 bg-yellow-50 rounded-sm">
-                   <CheckCircle size={16} className="text-yellow-600" />
-                   <p className="text-[9px] font-bold text-yellow-800 uppercase">I confirm that all information provided is true and accurate.</p>
+
+                {/* Training Courses Table */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-black uppercase text-xs tracking-widest text-gray-700">Other Training/Courses</h3>
+                    <button type="button" onClick={() => addRow('trainingCourses', { course: '', institution: '', from: '', to: '', file: null })} className="text-xs font-black uppercase text-blue-600 flex items-center gap-1"><Plus size={14}/> Add Row</button>
+                  </div>
+                  <div className="overflow-x-auto border border-gray-200">
+                    <table className="w-full text-sm">
+                      <thead className="bg-slate-100 text-[10px] uppercase tracking-widest text-gray-600">
+                        <tr>
+                          <th className="p-3 border-r">Course</th>
+                          <th className="p-3 border-r">Institution</th>
+                          <th className="p-3 border-r">From</th>
+                          <th className="p-3 border-r">To</th>
+                          <th className="p-3">File</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {formData.trainingCourses.map((row, i) => (
+                          <tr key={i} className="border-t border-gray-200">
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.course} onChange={(e) => updateRow('trainingCourses', i, 'course', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.institution} onChange={(e) => updateRow('trainingCourses', i, 'institution', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.from} onChange={(e) => updateRow('trainingCourses', i, 'from', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.to} onChange={(e) => updateRow('trainingCourses', i, 'to', e.target.value)} /></td>
+                            <td className="p-2"><input type="file" accept="application/pdf" className="text-[10px] w-full" onChange={(e) => handleRowFile('trainingCourses', i, 'file', e.target.files[0])} /></td>
+                            <td className="p-2">{i > 0 && <button type="button" onClick={() => removeRow('trainingCourses', i)} className="text-red-500"><Trash2 size={16}/></button>}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* NAVIGATION BUTTONS */}
-            <div className="mt-auto pt-10 flex justify-between">
-              {step > 1 && (
-                <button type="button" onClick={handleBack} className="flex items-center gap-2 text-[10px] font-black uppercase text-gray-400 hover:text-cia-black">
-                  <ArrowLeft size={14} /> Back
-                </button>
-              )}
-              {step < 3 ? (
-                <button 
-                  type="button" 
-                  onClick={handleNext} 
-                  disabled={step === 1 && !formData.fullName}
-                  className="ml-auto bg-cia-black text-white px-8 py-4 text-[10px] font-black uppercase flex items-center gap-2 hover:bg-cia-maroon disabled:opacity-50 transition-all shadow-[4px_4px_0px_0px_rgba(128,0,0,1)] active:shadow-none"
-                >
-                  Next Step <ArrowRight size={14} />
-                </button>
+            {/* STEP 4: SPONSOR DETAILS */}
+            {step === 4 && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                <SectionHeader icon={<User size={20} />} title="Sponsor Details" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select label="Sponsorship Type" required name="sponsorType" value={formData.sponsorType} onChange={handleChange} onBlur={handleBlur} options={["Self", "Parent/Guardian", "Organization", "Bursary/Scholarship", "Other"]} error={errors.sponsorType} touched={touched.sponsorType} className="md:col-span-2" />
+                  {formData.sponsorType && formData.sponsorType !== 'Self' && (
+                    <>
+                      <Input label="Sponsor Name" required name="sponsorName" value={formData.sponsorName} onChange={handleChange} onBlur={handleBlur} error={errors.sponsorName} touched={touched.sponsorName} />
+                      <Input label="Sponsor Contact" required name="sponsorContact" value={formData.sponsorContact} onChange={handleChange} onBlur={handleBlur} error={errors.sponsorContact} touched={touched.sponsorContact} />
+                      <Input label="Sponsor Email" name="sponsorEmail" value={formData.sponsorEmail} onChange={handleChange} />
+                      <Input label="Sponsor ID / Reg No" name="sponsorID" value={formData.sponsorID} onChange={handleChange} />
+                      <Textarea label="Sponsor Address" name="sponsorAddress" value={formData.sponsorAddress} onChange={handleChange} className="md:col-span-2" />
+                    </>
+                  )}
+                  {formData.sponsorType === 'Self' && <div className="md:col-span-2 p-4 bg-blue-50 text-blue-800 text-[10px] font-black uppercase border border-blue-100">You have selected Self-Sponsorship. Personal details will be used for billing.</div>}
+                </div>
+              </div>
+            )}
+
+            {/* STEP 5: DOCUMENTS */}
+            {step === 5 && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                <SectionHeader icon={<FileText size={20} />} title="Upload Documents" />
+                <div className={`border-2 border-dashed p-10 text-center relative ${errors.documents ? 'border-red-600' : 'border-gray-200 hover:border-black'}`}>
+                  <Upload className="mx-auto text-gray-300 mb-4" size={32} />
+                  <p className="text-xs font-bold text-gray-400">Upload Certified ID Copy & Highest Qualification (PDF only)</p>
+                  <input type="file" name="documents" accept="application/pdf" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleChange} />
+                  {formData.documents && <p className="text-[10px] text-green-600 font-bold mt-2 uppercase tracking-widest">Selected: {formData.documents.name}</p>}
+                </div>
+                {errors.documents && <p className="text-[10px] text-red-600 text-center">{errors.documents}</p>}
+              </div>
+            )}
+
+            {/* STEP 6: REVIEW */}
+            {step === 6 && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                <SectionHeader icon={<CheckCircle size={20} />} title="Review Your Application" />
+                <div className="bg-slate-50 border border-gray-200 divide-y divide-gray-200 rounded-sm">
+                  <ReviewRow label="Full Name" value={`${formData.fullNames} ${formData.surname}`} onEdit={() => setStep(1)} />
+                  <ReviewRow label="Email" value={formData.email} onEdit={() => setStep(1)} />
+                  <ReviewRow label="Course Choice" value={formData.firstChoice} onEdit={() => setStep(2)} />
+                  <ReviewRow label="Mode of Study" value={formData.modeOfStudy} onEdit={() => setStep(2)} />
+                  <ReviewRow label="Sponsorship" value={formData.sponsorType} onEdit={() => setStep(4)} />
+                  <ReviewRow label="Files Uploaded" value={formData.documents ? formData.documents.name : "Missing"} onEdit={() => setStep(5)} />
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-sm mt-4">
+                  <input type="checkbox" required className="mt-1 w-4 h-4" />
+                  <label className="text-[10px] font-black text-yellow-900 uppercase leading-relaxed">I confirm that all information provided is true and accurate.</label>
+                </div>
+              </div>
+            )}
+
+            {/* NAV BUTTONS */}
+            <div className="mt-auto pt-10 mb-9 flex justify-between">
+              {step > 1 && <button type="button" onClick={handleBack} className="flex items-center gap-2 text-[11px] font-black uppercase text-gray-400 hover:text-black"><ArrowLeft size={14} /> Back</button>}
+              {step < 6 ? (
+                <button type="button" onClick={handleNext} className="ml-auto bg-black text-white px-8 py-4 text-[11px] font-black uppercase flex items-center gap-2 hover:bg-gray-800 transition shadow">Next Step <ArrowRight size={14} /></button>
               ) : (
-                <button 
-                  type="submit" 
-                  className="ml-auto bg-cia-maroon text-white px-8 py-4 text-[10px] font-black uppercase flex items-center gap-2 hover:bg-cia-black transition-all shadow-[4px_4px_0px_0px_rgba(255,215,0,1)] active:shadow-none"
-                >
-                  Submit Application
-                </button>
+                <button type="submit" className="ml-auto bg-yellow-500 text-black px-8 py-4 text-[11px] font-black uppercase flex items-center gap-2 hover:bg-yellow-400 transition shadow">Confirm & Submit</button>
               )}
             </div>
 
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* --- REUSABLE COMPONENTS --- */
+function ProgressStep({ active, number, label }) {
+  return (
+    <div className={`flex items-center gap-4 ${active ? 'text-yellow-400' : 'text-gray-500'}`}>
+      <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-xs ${active ? 'border-yellow-400' : 'border-gray-600'}`}>{number}</div>
+      <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+    </div>
+  );
+}
+
+function SectionHeader({ icon, title }) {
+  return <div className="flex items-center gap-2 text-black mb-4">{icon}<h2 className="font-black uppercase text-sm tracking-widest">{title}</h2></div>;
+}
+
+function Input({ label, required, error, touched, className = "", ...props }) {
+  return (
+    <div className={className}>
+      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">{label}{required && <span className="text-red-600 ml-1">*</span>}</label>
+      <input {...props} required={required} className={`w-full p-4 bg-slate-50 border outline-none focus:border-black text-sm font-bold ${error && touched ? 'border-red-600' : 'border-gray-200'}`} />
+      {error && touched && <p className="text-[10px] text-red-600 mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function Textarea({ label, required, error, touched, className = "", ...props }) {
+  return (
+    <div className={className}>
+      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">{label}{required && <span className="text-red-600 ml-1">*</span>}</label>
+      <textarea {...props} required={required} className={`w-full p-4 bg-slate-50 border outline-none focus:border-black text-sm font-bold h-24 ${error && touched ? 'border-red-600' : 'border-gray-200'}`} />
+      {error && touched && <p className="text-[10px] text-red-600 mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function Select({ label, required, options, groupedOptions, error, touched, className = "", ...props }) {
+  return (
+    <div className={className}>
+      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">{label}{required && <span className="text-red-600 ml-1">*</span>}</label>
+      <select {...props} required={required} className={`w-full p-4 bg-slate-50 border outline-none focus:border-black text-sm font-bold ${error && touched ? 'border-red-600' : 'border-gray-200'}`}>
+        <option value="">Select...</option>
+        {groupedOptions ? Object.entries(groupedOptions).map(([group, items]) => (
+          <optgroup key={group} label={group}>{items.map(item => <option key={item} value={item}>{item}</option>)}</optgroup>
+        )) : options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+      </select>
+      {error && touched && <p className="text-[10px] text-red-600 mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function ReviewRow({ label, value, onEdit }) {
+  return (
+    <div className="flex justify-between items-center p-4">
+      <div><p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">{label}</p><p className="text-xs font-bold text-black">{value || "N/A"}</p></div>
+      <button type="button" onClick={onEdit} className="text-[10px] font-black uppercase text-blue-600 hover:underline">Edit</button>
     </div>
   );
 }
