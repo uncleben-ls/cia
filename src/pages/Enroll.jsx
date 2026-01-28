@@ -56,14 +56,14 @@ export default function Enroll() {
     highestQualification: '',
 
     // Step 3
-    secondarySchools: [
-      { school: '', from: '', to: '', qualification: '', year: '', file: null }
+    primaryHighSchools: [
+      { school: '', fromYear: '', toYear: '', qualification: '', file: null }
     ],
     tertiaryInstitutions: [
-      { institution: '', from: '', to: '', qualification: '', year: '', file: null }
+      { institution: '', fromYear: '', toYear: '', qualification: '', gpa: '', file: null }
     ],
     trainingCourses: [
-      { course: '', institution: '', from: '', to: '', file: null }
+      { course: '', institution: '', fromYear: '', toYear: '', file: null }
     ],
 
     // Step 4 (NEW)
@@ -93,6 +93,65 @@ export default function Enroll() {
     "Long Term Certificate Courses": longTermCourses,
     "Diploma Courses": diplomaCourses
   };
+
+    /* -----------------------------------------
+     AFRICAN COUNTRIES LIST
+  ------------------------------------------ */
+  const africanCountries = [
+    "Lesotho", // Pinned at top
+    "Algeria",
+    "Angola",
+    "Benin",
+    "Botswana",
+    "Burkina Faso",
+    "Burundi",
+    "Cabo Verde",
+    "Cameroon",
+    "Central African Republic",
+    "Chad",
+    "Comoros",
+    "Congo",
+    "Cote d'Ivoire",
+    "Djibouti",
+    "Egypt",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Eswatini",
+    "Ethiopia",
+    "Gabon",
+    "Gambia",
+    "Ghana",
+    "Guinea",
+    "Guinea-Bissau",
+    "Kenya",
+    "Liberia",
+    "Libya",
+    "Madagascar",
+    "Malawi",
+    "Mali",
+    "Mauritania",
+    "Mauritius",
+    "Morocco",
+    "Mozambique",
+    "Namibia",
+    "Niger",
+    "Nigeria",
+    "Rwanda",
+    "Sao Tome and Principe",
+    "Senegal",
+    "Seychelles",
+    "Sierra Leone",
+    "Somalia",
+    "South Africa",
+    "South Sudan",
+    "Sudan",
+    "Tanzania",
+    "Togo",
+    "Tunisia",
+    "Uganda",
+    "Zambia",
+    "Zimbabwe"
+  ];
 
   /* -----------------------------------------
      HELPERS
@@ -208,13 +267,13 @@ export default function Enroll() {
   };
 
   const isStepThreeValid = (mark = false) => {
-    const first = formData.secondarySchools[0];
-    const fields = ['school', 'from', 'to', 'qualification', 'year'];
+    const first = formData.primaryHighSchools[0];
+    const fields = ['school', 'fromYear', 'toYear', 'qualification'];
     let valid = true;
     fields.forEach(field => {
       if (!first[field]) {
         valid = false;
-        if (mark) setFieldError(`secondarySchools.0.${field}`, "Required");
+        if (mark) setFieldError(`primaryHighSchools.0.${field}`, "Required");
       }
     });
     return valid;
@@ -300,7 +359,17 @@ export default function Enroll() {
                   <Input label="Date of Birth" required type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} onBlur={handleBlur} error={errors.dateOfBirth} touched={touched.dateOfBirth} />
                   <Input label="Nationality" required name="nationality" value={formData.nationality} onChange={handleChange} onBlur={handleBlur} error={errors.nationality} touched={touched.nationality} />
                   <Input label="ID / Passport Number" required name="idPassportNumber" value={formData.idPassportNumber} onChange={handleChange} onBlur={handleBlur} error={errors.idPassportNumber} touched={touched.idPassportNumber} />
-                  <Input label="Country" required name="country" value={formData.country} onChange={handleChange} onBlur={handleBlur} error={errors.country} touched={touched.country} />
+                                    <Select
+                    label="Country"
+                    required
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    options={africanCountries}
+                    error={errors.country}
+                    touched={touched.country}
+                  />
                   <Textarea label="Residential Address" required name="address" value={formData.address} onChange={handleChange} onBlur={handleBlur} error={errors.address} touched={touched.address} className="md:col-span-2" />
                   <Input label="Telephone" required type="tel" name="telNo" value={formData.telNo} onChange={handleChange} onBlur={handleBlur} error={errors.telNo} touched={touched.telNo} />
                   <Input label="Email" required type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} touched={touched.email} />
@@ -333,30 +402,49 @@ export default function Enroll() {
                 
                 {/* Secondary School Table */}
                 <div className="space-y-4">
+                  
                   <div className="flex justify-between items-center">
-                    <h3 className="font-black uppercase text-xs tracking-widest text-gray-700">Secondary School <span className="text-red-600">*</span></h3>
+                    <h3 className="font-black uppercase text-xs tracking-widest text-gray-700">Primary or High School Qualification(s) <span className="text-red-600">*</span></h3>
+                    <button type="button" onClick={() => addRow('primaryHighSchools', { institution: '', from: '', to: '', qualification: '', year: '', file: null })} className="text-xs font-black uppercase text-blue-600 flex items-center gap-1"><Plus size={14}/> Add Row</button>
                   </div>
                   <div className="overflow-x-auto border border-gray-200">
                     <table className="w-full text-sm">
                       <thead className="bg-slate-100 text-[10px] uppercase tracking-widest text-gray-600">
                         <tr>
-                          <th className="p-3 border-r">School</th>
-                          <th className="p-3 border-r">From</th>
-                          <th className="p-3 border-r">To</th>
-                          <th className="p-3 border-r">Qualification</th>
-                          <th className="p-3 border-r">Year</th>
-                          <th className="p-3">File</th>
+                          <th className="p-3 border-r">Name of School</th>
+                          <th className="p-3 border-r">From (Year)</th>
+                          <th className="p-3 border-r">To (Year)</th>
+                          <th className="p-3 border-r">Qualification Attained</th>
+                          <th className="p-3">Upload Qualification</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {formData.secondarySchools.map((row, i) => (
+                                            <tbody>
+                        {formData.primaryHighSchools.map((row, i) => (
                           <tr key={i} className="border-t border-gray-200">
-                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.school} onChange={(e) => updateRow('secondarySchools', i, 'school', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.from} onChange={(e) => updateRow('secondarySchools', i, 'from', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.to} onChange={(e) => updateRow('secondarySchools', i, 'to', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.qualification} onChange={(e) => updateRow('secondarySchools', i, 'qualification', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.year} onChange={(e) => updateRow('secondarySchools', i, 'year', e.target.value)} /></td>
-                            <td className="p-2"><input type="file" accept="application/pdf" className="text-[10px] w-full" onChange={(e) => handleRowFile('secondarySchools', i, 'file', e.target.files[0])} /></td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.school} onChange={(e) => updateRow('primaryHighSchools', i, 'school', e.target.value)} /></td>
+                            <td className="p-2 border-r">
+                              <input 
+                                type="text" 
+                                className="w-full bg-transparent outline-none p-1" 
+                                value={row.fromYear} 
+                                onChange={(e) => updateRow('primaryHighSchools', i, 'fromYear', e.target.value)}
+                                placeholder="e.g., 2015"
+                                maxLength="4"
+                              />
+                            </td>
+                            <td className="p-2 border-r">
+                              <input 
+                                type="text" 
+                                className="w-full bg-transparent outline-none p-1" 
+                                value={row.toYear} 
+                                onChange={(e) => updateRow('primaryHighSchools', i, 'toYear', e.target.value)}
+                                placeholder="e.g., 2019"
+                                maxLength="4"
+                              />
+                            </td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.qualification} onChange={(e) => updateRow('primaryHighSchools', i, 'qualification', e.target.value)} /></td>
+                            <td className="p-2"><input type="file" accept="application/pdf" className="text-[10px] w-full" onChange={(e) => handleRowFile('primaryHighSchools', i, 'file', e.target.files[0])} /></td>
+                            <td className="p-2">{i > 0 && <button type="button" onClick={() => removeRow('primaryHighSchools', i)} className="text-red-500"><Trash2 size={16}/></button>}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -367,7 +455,7 @@ export default function Enroll() {
                 {/* Tertiary Institutions Table */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-black uppercase text-xs tracking-widest text-gray-700">Tertiary Institutions</h3>
+                    <h3 className="font-black uppercase text-xs tracking-widest text-gray-700">Tertiary Qualifications</h3>
                     <button type="button" onClick={() => addRow('tertiaryInstitutions', { institution: '', from: '', to: '', qualification: '', year: '', file: null })} className="text-xs font-black uppercase text-blue-600 flex items-center gap-1"><Plus size={14}/> Add Row</button>
                   </div>
                   <div className="overflow-x-auto border border-gray-200">
@@ -375,22 +463,40 @@ export default function Enroll() {
                       <thead className="bg-slate-100 text-[10px] uppercase tracking-widest text-gray-600">
                         <tr>
                           <th className="p-3 border-r">Institution</th>
-                          <th className="p-3 border-r">From</th>
-                          <th className="p-3 border-r">To</th>
+                          <th className="p-3 border-r">From (Year)</th>
+                          <th className="p-3 border-r">To (Year)</th>
                           <th className="p-3 border-r">Qualification</th>
-                          <th className="p-3 border-r">Year</th>
+                          <th className="p-3 border-r">Overall GPA</th>
                           <th className="p-3">File</th>
                           <th></th>
                         </tr>
                       </thead>
                       <tbody>
                         {formData.tertiaryInstitutions.map((row, i) => (
-                          <tr key={i} className="border-t border-gray-200">
+                                                    <tr key={i} className="border-t border-gray-200">
                             <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.institution} onChange={(e) => updateRow('tertiaryInstitutions', i, 'institution', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.from} onChange={(e) => updateRow('tertiaryInstitutions', i, 'from', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.to} onChange={(e) => updateRow('tertiaryInstitutions', i, 'to', e.target.value)} /></td>
+                            <td className="p-2 border-r">
+                              <input 
+                                type="text" 
+                                className="w-full bg-transparent outline-none p-1" 
+                                value={row.fromYear} 
+                                onChange={(e) => updateRow('tertiaryInstitutions', i, 'fromYear', e.target.value)}
+                                placeholder="e.g., 2020"
+                                maxLength="4"
+                              />
+                            </td>
+                            <td className="p-2 border-r">
+                              <input 
+                                type="text" 
+                                className="w-full bg-transparent outline-none p-1" 
+                                value={row.toYear} 
+                                onChange={(e) => updateRow('tertiaryInstitutions', i, 'toYear', e.target.value)}
+                                placeholder="e.g., 2023"
+                                maxLength="4"
+                              />
+                            </td>
                             <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.qualification} onChange={(e) => updateRow('tertiaryInstitutions', i, 'qualification', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.year} onChange={(e) => updateRow('tertiaryInstitutions', i, 'year', e.target.value)} /></td>
+                            <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.year} onChange={(e) => updateRow('tertiaryInstitutions', i, 'year', e.target.value)} placeholder="3.49" /></td>
                             <td className="p-2"><input type="file" accept="application/pdf" className="text-[10px] w-full" onChange={(e) => handleRowFile('tertiaryInstitutions', i, 'file', e.target.files[0])} /></td>
                             <td className="p-2">{i > 0 && <button type="button" onClick={() => removeRow('tertiaryInstitutions', i)} className="text-red-500"><Trash2 size={16}/></button>}</td>
                           </tr>
@@ -412,19 +518,37 @@ export default function Enroll() {
                         <tr>
                           <th className="p-3 border-r">Course</th>
                           <th className="p-3 border-r">Institution</th>
-                          <th className="p-3 border-r">From</th>
-                          <th className="p-3 border-r">To</th>
+                          <th className="p-3 border-r">From (Year)</th>
+                          <th className="p-3 border-r">To (Year)</th>
                           <th className="p-3">File</th>
                           <th></th>
                         </tr>
                       </thead>
                       <tbody>
                         {formData.trainingCourses.map((row, i) => (
-                          <tr key={i} className="border-t border-gray-200">
+                                                    <tr key={i} className="border-t border-gray-200">
                             <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.course} onChange={(e) => updateRow('trainingCourses', i, 'course', e.target.value)} /></td>
                             <td className="p-2 border-r"><input className="w-full bg-transparent outline-none p-1" value={row.institution} onChange={(e) => updateRow('trainingCourses', i, 'institution', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.from} onChange={(e) => updateRow('trainingCourses', i, 'from', e.target.value)} /></td>
-                            <td className="p-2 border-r"><input type="date" className="w-full bg-transparent outline-none p-1" value={row.to} onChange={(e) => updateRow('trainingCourses', i, 'to', e.target.value)} /></td>
+                            <td className="p-2 border-r">
+                              <input 
+                                type="text" 
+                                className="w-full bg-transparent outline-none p-1" 
+                                value={row.fromYear} 
+                                onChange={(e) => updateRow('trainingCourses', i, 'fromYear', e.target.value)}
+                                placeholder="e.g., 2021"
+                                maxLength="4"
+                              />
+                            </td>
+                            <td className="p-2 border-r">
+                              <input 
+                                type="text" 
+                                className="w-full bg-transparent outline-none p-1" 
+                                value={row.toYear} 
+                                onChange={(e) => updateRow('trainingCourses', i, 'toYear', e.target.value)}
+                                placeholder="e.g., 2022"
+                                maxLength="4"
+                              />
+                            </td>
                             <td className="p-2"><input type="file" accept="application/pdf" className="text-[10px] w-full" onChange={(e) => handleRowFile('trainingCourses', i, 'file', e.target.files[0])} /></td>
                             <td className="p-2">{i > 0 && <button type="button" onClick={() => removeRow('trainingCourses', i)} className="text-red-500"><Trash2 size={16}/></button>}</td>
                           </tr>
