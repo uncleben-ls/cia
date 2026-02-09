@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { getNextIntake } from '../utils/intakeManager';
 import StudentFilms from '../components/StudentFilms';
 import Lookbook from '../components/Lookbook';
-import BgPic from '../../public/images/bg.jpg';
+import BgPic from '../assets/images/bg.jpg';
 
 
 export default function Home() {

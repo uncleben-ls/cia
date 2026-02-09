@@ -8,7 +8,7 @@ export const courses = [
     duration: "3 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Beauty",
-    image: "../../public/images/Certificate in Makeup Artistry/makeup4.jpg",
+    image: "/src/assets/images/Certificate in Make-Up Artistry/makeup4.jpeg",
     requirements: ["Minimum Grade 7 Certificate", "Basic English Literacy", "Passion for Beauty Artistry"],
     modules: ["Skin Preparation", "Color Theory", "Day/Evening Looks", "Bridal & Glamour", "Sanitization"]
   },
