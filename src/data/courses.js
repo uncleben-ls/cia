@@ -8,7 +8,7 @@ export const courses = [
     duration: "3 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Beauty",
-    image: "/src/assets/images/Certificate in Make-Up Artistry/makeup4.jpeg",
+    image: "/images/Certificate in Make-Up Artistry/makeup4.jpeg",
     requirements: ["Minimum Grade 7 Certificate", "Basic English Literacy", "Passion for Beauty Artistry"],
     modules: ["Skin Preparation", "Color Theory", "Day/Evening Looks", "Bridal & Glamour", "Sanitization"]
   },
@@ -19,7 +19,7 @@ export const courses = [
     duration: "2 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Beauty",
-    image: "/src/assets/images/Certificate in Nail Artistry/nail1.jpg",
+    image: "/images/Certificate in Nail Artistry/nail1.jpg",
     requirements: ["Minimum Grade 7 Certificate", "Steady Hand & Attention to Detail"],
     modules: ["Manicure/Pedicure", "Acrylic Application", "Gel Systems", "Nail Art Design"]
   },
@@ -30,7 +30,7 @@ export const courses = [
     duration: "6 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Beauty",
-    image: "/src/assets/images/Certificate in Hairdressing/hair1.jpg",
+    image: "/images/Certificate in Hairdressing/hair1.jpg",
     requirements: ["Minimum Grade 7 Certificate", "Ability to stand for long periods"],
     modules: ["Hair Treatment", "Braiding & Weaving", "Cutting & Styling", "Chemical Treatments"]
   },
