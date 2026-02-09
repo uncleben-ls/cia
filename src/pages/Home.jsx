@@ -10,7 +10,7 @@ import BgPic from '../../public/images/bg.jpg';
 export default function Home() {
   const intake = getNextIntake();
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col -mt-24 md:-mt-10">
       
       {/* ----------------------------------------------------------------------
           CATEGORY: HERO SECTION
