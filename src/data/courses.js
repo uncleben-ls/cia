@@ -41,7 +41,7 @@ export const courses = [
     duration: "6 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Beauty",
-    image: "/src/assets/images/Cosmetology/cosm3.jpeg",
+    image: "/images/Cosmetology/cosm3.jpeg",
     requirements: ["Junior Certificate (JC) or equivalent", "Basic Science knowledge"],
     modules: ["Dermatology Basics", "Facial Treatments", "Body Massage", "Advanced Aesthetics"]
   },
@@ -52,7 +52,7 @@ export const courses = [
     duration: "3 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Entertainment",
-    image: "/src/assets/images/Certificate in Effects Make-Up/cem2.jpeg",
+    image: "/images/Certificate in Effects Make-Up/cem2.jpeg",
     requirements: ["Previous Basic Makeup Certificate preferred", "Artistic Flair"],
     modules: ["Prosthetics", "Wound Simulation", "Character Aging", "HD Camera Readiness"]
   },
@@ -63,7 +63,7 @@ export const courses = [
     duration: "6 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Entertainment",
-    image: "/src/assets/images/Certificate in Modeling/model2.jpg",
+    image: "/images/Certificate in Modeling/model2.jpg",
     requirements: ["Physical Fitness", "Confident Personality", "Open to all heights/sizes"],
     modules: ["Runway Walk", "Posing Techniques", "Portfolio Development", "Social Media Branding"]
   },
@@ -74,7 +74,7 @@ export const courses = [
     duration: "6 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Entertainment",
-    image: "/src/assets/images/Certificate in Dance Art/dance2.jpeg",
+    image: "/images/Certificate in Dance Art/dance2.jpeg",
     requirements: ["Physical Fitness", "Rhythmic Sense", "Beginners Welcome"],
     modules: ["Contemporary Dance", "Traditional/Likoere", "Choreography", "Performance Art"]
   },
@@ -85,7 +85,7 @@ export const courses = [
     duration: "6 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Entertainment",
-    image: "/src/assets/images/Certificate in Dance Art/dance5.jpeg",
+    image: "/images/Certificate in Dance Art/dance5.jpeg",
     requirements: ["Audition Required", "Basic Interest in Theory"],
     modules: ["Vocal Coaching", "Music Theory 101", "Instrument Basics", "Songwriting"]
   },
@@ -96,7 +96,7 @@ export const courses = [
     duration: "6 Months",
     tier: "Non-Credit Bearing Certificate",
     category: "Fashion",
-    image: "/src/assets/images/Certificate in Dressmaking/dress2.jpeg",
+    image: "/images/Certificate in Dressmaking/dress2.jpeg",
     requirements: ["Passion for Garments", "Basic Math Skills"],
     modules: ["Intro to Textiles", "Basic Pattern Cutting", "Machine Operations", "Fashion Illustration"]
   },
@@ -109,7 +109,7 @@ export const courses = [
     duration: "12 Months",
     tier: "Long Term Credit Bearing Certificate",
     category: "Fashion",
-    image: "/src/assets/images/Certificate in Dressmaking/dress6.jpg",
+    image: "/images/Certificate in Dressmaking/dress6.jpg",
     requirements: ["Junior Certificate (JC) or LGCSE", "Portfolio of 3 hand-sewn items (optional)"],
     modules: ["Advanced Sewing", "Garment Construction", "Measurement Logic", "Business for Tailors"]
   },
@@ -120,7 +120,7 @@ export const courses = [
     duration: "12 Months",
     tier: "Long Term Credit Bearing Certificate",
     category: "Fashion",
-    image: "/src/assets/images/Certificate in Fashion Design/fashion10.jpg",
+    image: "/images/Certificate in Fashion Design/fashion10.jpg",
     requirements: ["Junior Certificate (JC) or LGCSE", "Artistic Portfolio"],
     modules: ["Fashion Forecasting", "Pattern Drafting", "Digital Design", "Collection Development"]
   },
@@ -131,7 +131,7 @@ export const courses = [
     duration: "12 Months",
     tier: "Long Term Credit Bearing Certificate",
     category: "Entertainment",
-    image: "/src/assets/images/Certificate in Theatre & Dramatic Arts/t1.jpg",
+    image: "/images/Certificate in Theatre & Dramatic Arts/t1.jpg",
     requirements: ["LGCSE with English Credit", "Audition (Monologue)"],
     modules: ["Acting Techniques", "Stage Management", "Script Writing", "History of Theatre"]
   },
@@ -142,7 +142,7 @@ export const courses = [
     duration: "12 Months",
     tier: "Long Term Credit Bearing Certificate",
     category: "Entertainment",
-    image: "/src/assets/images/Certificate in Dance Art/dance3.jpeg",
+    image: "/images/Certificate in Dance Art/dance3.jpeg",
     requirements: ["LGCSE or Equivalent", "Practical Music Audition"],
     modules: ["Ensemble Performance", "Sound Engineering", "Music Law", "Advanced Instrument/Vocal"]
   },
@@ -153,7 +153,7 @@ export const courses = [
     duration: "12 Months",
     tier: "Long Term Credit Bearing Certificate",
     category: "Fashion",
-    image: "/src/assets/images/Certificate in Tailoring/1.jpg",
+    image: "/images/Certificate in Tailoring/1.jpg",
     requirements: ["LGCSE or Equivalent", "Practical Music Audition"],
     modules: ["loading...."]
   },
@@ -166,7 +166,7 @@ export const courses = [
     duration: "3 Years",
     tier: "Diploma",
     category: "Fashion",
-    image: "/src/assets/images/Diploma in Fashion Design/1.jpg",
+    image: "/images/Diploma in Fashion Design/1.jpg",
     requirements: ["LGCSE with 4 Credits", "Fashion Drawing Portfolio", "Interview with Faculty"],
     modules: ["Draping", "Apparel Technology", "Marketing & Merchandising", "Sustainability in Fashion", "Graduation Collection"]
   }
