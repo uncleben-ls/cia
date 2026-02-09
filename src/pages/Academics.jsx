@@ -14,7 +14,7 @@ export default function Academics() {
   ];
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-white -mt-24 md:-mt-10">
       {/* 1. Header Section */}
       <div className="w-full bg-cia-black text-white py-12 md:py-20 px-6 text-center">
         <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter">

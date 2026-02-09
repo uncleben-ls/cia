@@ -15,7 +15,7 @@ export default function CourseDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white -mt-24 md:-mt-10">
       {/* ----------------------------------------------------------------------
           CATEGORY: COURSE HEADER
           Purpose: Displaying core identity of the specific program.

@@ -31,7 +31,7 @@ export default function News() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white -mt-24 md:-mt-10">
       
       {/* ----------------------------------------------------------------------
           CATEGORY: FEATURED HEADLINE

@@ -3,7 +3,7 @@ import { Target, Eye, ShieldCheck, Award, MapPin, ExternalLink } from 'lucide-re
 
 export default function About() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col -mt-24 md:-mt-10">
       
       {/* ----------------------------------------------------------------------
           CATEGORY: BRAND STORY & MISSION
