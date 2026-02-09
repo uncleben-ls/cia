@@ -11,7 +11,7 @@ export default function Contact() {
   ]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white -mt-24 md:-mt-10">
       {/* HEADER */}
       <section className="bg-cia-maroon py-12 px-6 text-white text-center">
         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">Contact Us</h1>
@@ -28,7 +28,7 @@ export default function Contact() {
               <div className="space-y-4">
                 <p className="flex items-center gap-3 text-sm font-bold"><MapPin className="text-cia-maroon" size={18}/> Tsénola, Sekeleng e Tlase, Maseru</p>
                 <p className="flex items-center gap-3 text-sm font-bold"><Phone className="text-cia-maroon" size={18}/> +266 5781 0905</p>
-                <p className="flex items-center gap-3 text-sm font-bold"><Mail className="text-cia-maroon" size={18}/> info@cograbig.edu</p>
+                <p className="flex items-center gap-3 text-sm font-bold"><Mail className="text-cia-maroon" size={18}/> info@cograbig.co.ls</p>
                 <p className="flex items-center gap-3 text-sm font-bold"><Clock className="text-cia-maroon" size={18}/> Mon-Fri: 08:00 - 17:00</p>
               </div>
             </div>
